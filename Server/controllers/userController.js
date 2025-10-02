@@ -39,18 +39,29 @@ const loginUser = async (req, res) => {
       expiresIn: "1d",
     });
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "Login successful",
-        data: userExists,
-        token: token,
-      });
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      data: userExists,
+      token: token,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-module.exports = { registerUser, loginUser };
+const getCurrentUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.body.userId).select("-password");
+    res.status(200).json({
+      success: true,
+      message: "User Details fetched successfully",
+      data: user,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+module.exports = { registerUser, loginUser, getCurrentUser };

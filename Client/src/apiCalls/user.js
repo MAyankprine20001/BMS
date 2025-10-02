@@ -19,3 +19,13 @@ export const loginUser = async (credentials) => {
     throw error.response?.data || error.message;
   }
 };
+
+export const getCurrentUser = async () => {
+  try {
+    const response = await axiosInstance.get("/users/current-user");
+    return response.data;
+  } catch (error) {
+    // Optionally return a clearer error
+    return error.response?.data || error.message;
+  }
+};

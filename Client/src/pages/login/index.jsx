@@ -18,7 +18,7 @@ const Login = () => {
       console.log("Registration response: ", response);
       if (response.success) {
         toastHelper.success(response.message);
-        navigateTo("/home");
+        navigateTo("/");
         localStorage.setItem("token", response.token);
         localStorage.setItem("user", JSON.stringify(response.data));
       }

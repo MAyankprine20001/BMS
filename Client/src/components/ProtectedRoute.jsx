@@ -18,6 +18,7 @@ function ProtectedRoute({ children }) {
   const dispatch = useDispatch();
   const navigateTo = useNavigation();
 
+  console.log("user from protected route", user);
   const navItems = [
     {
       label: "Home",

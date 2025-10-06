@@ -1,33 +1,23 @@
-import { Table } from "antd";
-import React from "react";
-import { data } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { getAllMovies } from "../../apicalls/movie";
+import { Button, Table } from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import MovieForm from "./MovieForm";
+import DeleteMovieModal from "./DeleteMovieModal";
+import moment from "moment";
 
-const MovieLists = () => {
-  const latestMovies = [
-    {
-      key: "1",
-      poster: "https://image.tmdb.org/t/p/w500/qNBAXBIQlnOThrVvA6mA2B5ggV6.jpg",
-      description:
-        "Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family.",
-      duration: "166 min",
-      genre: "Sci-Fi, Adventure",
-      language: "English",
-      releaseDate: "2024-03-01",
-      movieName: "Dune: Part Two",
-    },
-  ];
+function MovieList() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formType, setFormType] = useState("add");
+  const [selectedMovie, setSelectedMovie] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [movies, setMovies] = useState([]);
 
-  const column = [
+  const columns = [
     {
       title: "Poster",
       dataIndex: "poster",
-      render: (url) => (
-        <img
-          src={url}
-          alt="poster"
-          className="h-20 w-20 object-cover rounded-md"
-        />
-      ),
+      render: (url) => <img src={url} alt="poster" width={50} />,
     },
     {
       title: "Movie Name",
@@ -36,6 +26,7 @@ const MovieLists = () => {
     {
       title: "Description",
       dataIndex: "description",
+      width: 300,
     },
     {
       title: "Duration (in mins)",
@@ -50,20 +41,86 @@ const MovieLists = () => {
       dataIndex: "language",
     },
     {
-      title: "Realease Date",
+      title: "Release Date",
       dataIndex: "releaseDate",
+      render: (value) => {
+        return moment(value).format("MM-DD-YYYY");
+      },
     },
     {
       title: "Actions",
-      render: () => <a>Delete</a>,
+      render: (_, rowObj) => {
+        return (
+          <div className="flex gap-1">
+            <Button
+              onClick={() => {
+                setIsModalOpen(true);
+                setFormType("edit");
+                setSelectedMovie(rowObj);
+              }}
+            >
+              <EditOutlined />
+            </Button>
+            <Button
+              onClick={() => {
+                setIsDeleteModalOpen(true);
+                setSelectedMovie(rowObj);
+              }}
+            >
+              <DeleteOutlined />
+            </Button>
+          </div>
+        );
+      },
     },
-    ];
-    
+  ];
+
+  const fetchAllMovies = async () => {
+    const response = await getAllMovies();
+    console.log(response);
+    const allMovies = response.movies;
+    setMovies(
+      allMovies?.map((movie) => ({ ...movie, key: `movie_${movie._id}` }))
+    );
+  };
+
+  useEffect(() => {
+    fetchAllMovies();
+  }, []);
+
   return (
-    <div>
-      <Table dataSource={latestMovies} columns={column} />
+    <div className="p-4">
+      <div className="flex justify-end mb-4 mr-4">
+        <Button
+          onClick={() => {
+            setIsModalOpen(true);
+          }}
+        >
+          Add Movie
+        </Button>
+      </div>
+      <Table columns={columns} dataSource={movies} />
+      {isModalOpen && (
+        <MovieForm
+          selectedMovie={selectedMovie}
+          setSelectedMovie={setSelectedMovie}
+          formType={formType}
+          fetchAllMovies={fetchAllMovies}
+          isModalOpen={isModalOpen}
+          setIsModalOpen={setIsModalOpen}
+        />
+      )}
+      {isDeleteModalOpen && (
+        <DeleteMovieModal
+          isDeleteModalOpen={isDeleteModalOpen}
+          setIsDeleteModalOpen={setIsDeleteModalOpen}
+          selectedMovie={selectedMovie}
+          setSelectedMovie={setSelectedMovie}
+          fetchAllMovies={fetchAllMovies}
+        />
+      )}
     </div>
   );
-};
+}
 
-export default MovieLists;
+export default MovieList;

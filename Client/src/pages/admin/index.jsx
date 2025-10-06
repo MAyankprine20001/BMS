@@ -1,19 +1,19 @@
-import React, { Children, useEffect } from "react";
-import useNavigation from "../../hooks/useNavigation";
+import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
-import MovieLists from "./MovieLists";
+import { useNavigate } from "react-router-dom";
+import MovieList from "./MovieLists";
 import ThretreTable from "./ThretreTable";
 import { Tabs } from "antd";
 
-const Admin = () => {
+function Admin() {
   const { user } = useSelector((state) => state.user);
-  const navigateTo = useNavigation();
+  const navigate = useNavigate();
 
   const tabItems = [
     {
       key: "1",
       label: "Movies",
-      children: <MovieLists />,
+      children: <MovieList />,
     },
     {
       key: "2",
@@ -24,20 +24,18 @@ const Admin = () => {
 
   useEffect(() => {
     if (user !== "null" && user?.role !== "admin") {
-      navigateTo("/");
+      navigate("/");
     }
   }, [user]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-6">Admin Page</h1>
-          <Tabs items={tabItems} />
-        </div>
+    <div className="min-h-screen">
+      <div className="bg-gray-800 text-white py-4 px-6 shadow-md">
+        <h1 className="text-2xl font-bold m-0">Admin Page</h1>
       </div>
+      <Tabs items={tabItems} className="mt-0" />
     </div>
   );
-};
+}
 
 export default Admin;

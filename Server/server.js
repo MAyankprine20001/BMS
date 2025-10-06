@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const userRouter = require("./routes/usersRoutes");
+const movieRouter = require("./routes/movieRoutes");
 const cors = require("cors");
 
 require("dotenv").config();
@@ -10,6 +11,7 @@ app.use(express.json());
 app.use(cors());
 
 app.use("/api/users", userRouter);
+app.use("/api/movies", movieRouter);
 
 app.get("/heath", (req, res) => {
   res.status(200).json({ success: true, message: "server is healthy" });
